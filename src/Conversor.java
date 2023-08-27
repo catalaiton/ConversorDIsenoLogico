@@ -1,29 +1,29 @@
 import java.util.Scanner;
 
-public class Conversor {
+public class Conversor{
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Ingresa el número: ");
         String numero = scanner.nextLine();
 
-        System.out.print("Ingresa la base actual (entre 2 y 512): ");
+        System.out.print("Ingresa la base actual (entre 2 y 1024): ");
         int baseActual = scanner.nextInt();
 
         if (baseActual < 2 || baseActual > 1024) {
-            System.out.println("La base debe estar entre 2 y 512.");
+            System.out.println("La base debe estar entre 2 y 1024.");
             return;
         }
 
-        System.out.print("Ingresa la nueva base (entre 2 y 512): ");
+        System.out.print("Ingresa la nueva base (entre 2 y 1024): ");
         int nuevaBase = scanner.nextInt();
 
         if (nuevaBase < 2 || nuevaBase > 1024) {
-            System.out.println("La nueva base debe estar entre 2 y 512.");
+            System.out.println("La nueva base debe estar entre 2 y 1024.");
             return;
         }
 
-        // Definir los caracteres válidos para bases hasta 290
+        // Definir los caracteres válidos para bases hasta 512
         String caracteresBaseActual = "0123456789ABCDEFGHIJKLMNÑOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" +
                 "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワ'" +
                 "ガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅋㅌㅍㅎ!" +
@@ -45,22 +45,19 @@ public class Conversor {
         // Convertir ambos números a base 10 para verificar
         int originalDecimal = customParseInt(numero, caracteresBaseActual, baseActual);
         int convertedDecimal = customParseInt(nuevoNumero, caracteresNuevaBase, nuevaBase);
-        
-     // Comprobación de relación potencial entre bases
+
+        // Comprobación de relación potencial entre bases
         boolean tienenRelacionPotencial = tieneRelacionPotencial(baseActual, nuevaBase);
         System.out.println("Relación potencial entre bases: " + (tienenRelacionPotencial ? "Sí" : "No"));
 
-       
         System.out.println("El número " + numero + " en base " + baseActual +
                 " es equivalente a " + nuevoNumero + " en base " + nuevaBase);
 
         System.out.println("Verificación:");
         System.out.println("Número original en base 10: " + originalDecimal);
         System.out.println("Número convertido en base 10: " + convertedDecimal);
-        
     }
 
-    // Implementación de parseInt para bases personalizadas
     private static int customParseInt(String s, String validChars, int radix) {
         int base = validChars.length();
         int result = 0;
@@ -69,7 +66,7 @@ public class Conversor {
         for (int i = s.length() - 1; i >= 0; i--) {
             char digitChar = s.charAt(i);
             int digitValue = validChars.indexOf(digitChar);
-            
+
             if (digitValue == -1 || digitValue >= radix) {
                 throw new IllegalArgumentException("Carácter inválido en el número.");
             }
@@ -81,20 +78,23 @@ public class Conversor {
         return result;
     }
 
-    // Implementación de toString para bases personalizadas
     private static String customToString(int value, String validChars, int newBase) {
         int base = validChars.length();
         StringBuilder sb = new StringBuilder();
 
-        while (value > 0) {
-            int digit = value % newBase;
-            sb.insert(0, validChars.charAt(digit));
-            value /= newBase;
+        if (value == 0) {
+            sb.append(validChars.charAt(0));
+        } else {
+            while (value > 0) {
+                int digit = value % newBase;
+                sb.insert(0, validChars.charAt(digit));
+                value /= newBase;
+            }
         }
 
         return sb.toString();
     }
-    
+
     private static boolean tieneRelacionPotencial(int base1, int base2) {
         if (base1 == base2) {
             return true;  // Bases iguales siempre tienen relación potencial
@@ -103,17 +103,12 @@ public class Conversor {
         int smallerBase = Math.min(base1, base2);
         int largerBase = Math.max(base1, base2);
 
-        int exponent = 0;
-        int power = 1;
+        int power = smallerBase;
 
         while (power < largerBase) {
             power *= smallerBase;
-            exponent++;
         }
 
         return power == largerBase;
     }
-
-    
-   
 }
